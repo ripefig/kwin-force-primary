@@ -1,0 +1,47 @@
+#!/bin/bash
+
+GROUPNUM=$(sed -n  's/^\[\([[:digit:]]*\)\]/\1/p' $RULEFILE |
+sort -rn | 
+head -n 1)
+
+let GROUPNUM++
+
+RULEFILE="$HOME/.config/kwinrulesrc"
+cp $RULEFILE $RULEFILE.bak
+
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key Description 'Moves Windows to Screen 1'
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key screen 0
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key screenrule 2
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key types 33
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key windowrole '^((?!lattedock).)*$'
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key wmclasscomplete 'false'
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key windowrolematch 3
+kwriteconfig5 --file $RULEFILE --group "${GROUPNUM}" --key wmclassmatch 0
+
+
+qdbus org.kde.KWin /KWin reconfigure
+
+sleep 3
+
+mv $RULEFILE.bak $RULEFILE
+
+sleep 1
+
+qdbus org.kde.KWin /KWin reconfigure
+
+# RULE="
+# [${GROUPNUM}]
+# Description=Move
+# screen=0
+# screenrule=2
+# types=33
+# windowrole=^((?!lattedock).)*$
+# windowrolematch=3
+# wmclass=
+# wmclasscomplete=false
+# wmclassmatch=0
+# "
+
+
+
+
